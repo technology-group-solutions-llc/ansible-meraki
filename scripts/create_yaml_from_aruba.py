@@ -71,9 +71,11 @@ def parse_config_logs(logdir):
             cur_address = {}
             cur_device = {}
 
+            network_name = os.path.split(os.getcwd())[1]
+                
             for gw_obj in parse.find_objects('^ip route'):
 
-                default_gw = gw_obj.re_match_typed('^ip\sroute\s\d+\.\d+\.\d+\.\d+\/\d+\s(\d+\.\d+\.\d+\.\d+)$')
+                default_gw = gw_obj.re_match_typed('^ip\sroute\s0\.0\.0\.0\/0\s(\d+\.\d+\.\d+\.\d+).*$')
 
             for intf_obj in parse.find_objects('^interface vlan'):
 
