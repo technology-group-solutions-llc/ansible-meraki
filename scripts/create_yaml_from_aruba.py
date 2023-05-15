@@ -2,6 +2,7 @@ from ciscoconfparse import CiscoConfParse
 import sys
 import yaml
 import os
+import ipaddress
 
 
 def append_dict_if_new(list_of_dicts, new_dict, matching_key):
@@ -73,6 +74,11 @@ def parse_config_logs(logdir):
                     r'ip\saddress\s(\d+\.\d+\.\d+\.\d+\/\d+)$', result_type=str,
                     group=1, default='')
                 
+                if intf_ip_addr:
+                    subnet = str(ipaddress.ip_network(intf_ip_addr, strict=False))
+                else:
+                    subnet = "0.0.0.0/0"
+
                 intf_name = intf_obj.re_match_iter_typed(
                     r'description\s(.*)$', result_type=str,
                     group=1, default='')
@@ -82,7 +88,7 @@ def parse_config_logs(logdir):
                         "template_name": templ_name,
                         "name": intf_name,
                         "vlan_id": vlan_id,
-                        "subnet": intf_ip_addr,
+                        "subnet": subnet,
                         "default_gw": default_gw,
                 }
 
@@ -110,7 +116,15 @@ def parse_config_logs(logdir):
     yaml.dump(addresses_yaml, addressfile)
 
 if __name__ == "__main__":
-    directory = os.getcwd()
+
+    print("")
+    print("The path provided below should be structured like:")
+    print("<path>/Site1/*.log")
+    print("<path>/Site2/*.log... etc")
+    print("Each log file should contain the text output from show running-config on Aruba switches")
+    print("")
+    directory = input("Enter full path to directory: ")
+
     for root, dirs, files in os.walk(directory):
         for dir in dirs:
             filepath = os.path.join(directory, dir)
