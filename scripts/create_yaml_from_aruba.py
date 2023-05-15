@@ -12,6 +12,7 @@ def append_dict_if_new(list_of_dicts, new_dict, matching_key):
     Args:
     list_of_dicts: The list of dicts to iterate over.
     new_dict: The dict to append to the list.
+    matching_key: The key in the dict to look for matches in
 
     Returns:
     The updated list of dicts.
@@ -32,6 +33,14 @@ def append_dict_if_new(list_of_dicts, new_dict, matching_key):
 def append_dict_title(list_of_dicts, new_dict, title):
     """
     Iterates over a list of dicts and appends an outer dict to each one with an increasing number identifier
+
+    Args:
+    list_of_dicts: The list of dicts to iterate over
+    new_dict: The new dict to append to
+    title: The outer dict title to add to the new dict (ie - "subnet-" would add an outer dict of subnet-1, subnet-2, etc)
+
+    Returns:
+    The updated dict.
     """
     for dict in list_of_dicts:
         identifier = title + "-" + str(len(new_dict) + 1)
