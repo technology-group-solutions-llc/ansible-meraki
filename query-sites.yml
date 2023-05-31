@@ -1,0 +1,14 @@
+---
+- name: meraki query
+  hosts: localhost
+  vars:
+    auth_key: "{{ auth }}"
+    org_name: "{{ org }}"
+
+  tasks:
+
+    - name: Query all site (network) names
+      meraki_network:
+        auth_key: "{{ auth_key }}"
+        state: query
+        org_name: "{{ org_name }}"
