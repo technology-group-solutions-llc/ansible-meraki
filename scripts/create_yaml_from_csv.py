@@ -14,8 +14,8 @@ def create_yaml_file(csv_file, yaml_file):
 
   with open(csv_file, 'r') as csv_file_reader:
     reader = csv.DictReader(csv_file_reader)
-    data = [row for row in reader if row['Site Name'] == site_name]
-    new_data = [{k:v for k,v in d.items() if k in ['Site Name', 'Device Name', 'SN']} for d in data]
+    data = [row for row in reader if row['site_name'] == site_name]
+    new_data = [{k:v for k,v in d.items() if k in ['device_name', 'serial_no', 'site_name', 'site_address']} for d in data]
   
   append_dict_title(new_data, new_data_yaml, 'device')
     
@@ -47,11 +47,11 @@ if __name__ == '__main__':
   print("This will create a devices.yaml file in the same directory")
   print("")
   print("The CSV file needs to have these headings:")
-  print("Site Name, SN, Device Name")
+  print("device_name, serial_no, site_name, site_address")
   print("")
   csv_file = input("Enter name of the CSV file you would like to use as input: ")
   print("")
-  print("Next you will be prompted for a Site Name and only devices assigned to this Site Name will be in the yaml output")
+  print("Next you will be prompted for a Site Name and only devices assigned to this Site will be in the yaml output")
   print("")
   site_name = input("Which Site Name would you like to output YAML for: ")
   yaml_file = 'devices.yaml'
