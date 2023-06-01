@@ -65,7 +65,12 @@
 
     - name: Print unique devices 
       ansible.builtin.debug:
-        msg: "These are the new devices to add: {{ unique_devices }}"   
+        msg: "These are the new devices to add: {{ unique_devices }}"
+
+    - name: Call playbook to add new devices
+      ansible.builtin.include_tasks: deploy-newdevice-fromyaml.yml
+      with_items: "{{ unique_devices }}"
+
     # - name: Block for adding only new devices
     #   block:
 
