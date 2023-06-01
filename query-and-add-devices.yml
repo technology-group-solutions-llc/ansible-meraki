@@ -29,14 +29,49 @@
         msg: "{{ devices.devices | json_query('[].[site_name]') | unique }}"
       # loop: "{{ lookup('dict', devices, wantlist=True) }}"
 
+    - name: Set a list of unique Sites
+      ansible.builtin.set_fact:
+        unique_sites: "{{ devices.devices | json_query('[].[site_name]') | unique }}"
+        new_devices: "{{ devices.devices | json_query('[].[device_name]') | flatten }}"
+
     - name: Query devices attached to a specific network
       cisco.meraki.meraki_device:
         auth_key: "{{ auth_key }}"
         state: query
         org_id: "{{ org_output.data.id }}"
-        net_name: "{{ site_name }}"
+        net_name: "{{ item }}"
       register: device_output
+      loop: "{{ unique_sites | flatten(1) }}"
 
+    - name: Print device_output
+      ansible.builtin.debug:
+        var: device_output
+
+    - name: Print Device names that exist
+      ansible.builtin.debug:
+        msg: "Devices exist: {{ device_output.results | json_query('[*].data[*].name') | flatten }}"
+
+    - name: Set existing device list
+      ansible.builtin.set_fact:
+        existing_devices: "{{ device_output.results | json_query('[*].data[*].name') | flatten }}"
+
+    - name: Set unique device names to add
+      ansible.builtin.set_fact:
+        unique_devices: "{{ new_devices | difference(existing_devices) }}"
+
+    - name: Print vars
+      ansible.builtin.debug:
+        msg: "new devices {{ new_devices }} and existing devices {{ existing_devices }}" 
+
+    - name: Print unique devices 
+      ansible.builtin.debug:
+        msg: "These are the new devices to add: {{ unique_devices }}"   
+    # - name: Block for adding only new devices
+    #   block:
+
+    #     - name: Print device to add 
+    #       ansible.builtin.debug:
+    #         msg: "I would add device "
 
 
 
