@@ -25,7 +25,6 @@
         auth_key: "{{ auth_key }}"
         state: query
         org_id: "{{ org_output.data.id }}"
-        validate_certs: false
         net_name: "{{ net_name | default('') }}"
       register: network_output
 
@@ -39,7 +38,21 @@
         msg: "{{ network_output.data | selectattr('name', 'defined') | map(attribute='name') }}"
       when: net_name == ""
 
-    - name: Print single Network ID results
+    - name: Print single Network results
       ansible.builtin.debug:
         msg: "{{ network_output.data.name }} is created"
+      when: net_name != ""
+
+    - name: Query devices attached to a specific network
+      cisco.meraki.meraki_device:
+        auth_key: "{{ auth_key }}"
+        state: query
+        org_id: "{{ org_output.data.id }}"
+        net_name: "{{ net_name }}"
+      register: device_output
+      when: net_name != ""
+
+    - name: Print devices on network {{ net_name }}
+      ansible.builtin.debug:
+        msg: "{{ device_output.data | selectattr('name', 'defined') | map(attribute='name') }}"
       when: net_name != ""
