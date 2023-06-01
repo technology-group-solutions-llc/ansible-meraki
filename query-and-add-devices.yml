@@ -1,0 +1,78 @@
+---
+- name: meraki query
+  hosts: meraki
+  vars:
+    auth_key: "{{ auth }}"
+    org_name: "{{ org }}"
+
+  tasks:
+
+    - name: include variables for devices
+      include_vars:
+        file: devices.yaml
+        name: devices
+
+    - name: Query Organization
+      cisco.meraki.meraki_organization:
+        auth_key: "{{ auth_key }}"
+        org_name: "{{ org_name }}"
+        state: query
+      register: org_output
+
+    - name: print devices
+      ansible.builtin.debug:
+        var: devices
+
+    - name: Print unique Sites 
+      ansible.builtin.debug:
+        # var: devices
+        msg: "{{ devices.devices | json_query('[].[site_name]') | unique }}"
+      # loop: "{{ lookup('dict', devices, wantlist=True) }}"
+
+    - name: Query devices attached to a specific network
+      cisco.meraki.meraki_device:
+        auth_key: "{{ auth_key }}"
+        state: query
+        org_id: "{{ org_output.data.id }}"
+        net_name: "{{ site_name }}"
+      register: device_output
+
+
+
+
+    # - name: Query all site (network) names
+    #   cisco.meraki.meraki_network:
+    #     auth_key: "{{ auth_key }}"
+    #     state: query
+    #     org_id: "{{ org_output.data.id }}"
+    #     net_name: "{{ net_name | default('') }}"
+    #   register: network_output
+
+    # - name: Fail because network has not been created yet
+    #   ansible.builtin.fail:
+    #     msg: "Network {{ net_name }} has not been created yet. Please create it first in the Meraki Cloud"
+    #   when: network_output.data == false
+
+    # - name: Print multiple network names
+    #   ansible.builtin.debug:
+    #     msg: "{{ network_output.data | selectattr('name', 'defined') | map(attribute='name') }}"
+    #   when: net_name == ""
+
+    # - name: Print single Network results
+    #   ansible.builtin.debug:
+    #     msg: "{{ network_output.data.name }} is created"
+    #   when: net_name != ""
+
+    # - name: Query devices attached to a specific network
+    #   cisco.meraki.meraki_device:
+    #     auth_key: "{{ auth_key }}"
+    #     state: query
+    #     org_id: "{{ org_output.data.id }}"
+    #     net_name: "{{ net_name }}"
+    #   register: device_output
+    #   when: net_name != ""
+
+    # - name: Print devices on network {{ net_name }}
+    #   ansible.builtin.debug:
+    #     msg: "{{ device_output.data | selectattr('name', 'defined') | map(attribute='name') }}"
+    #   when: net_name != ""

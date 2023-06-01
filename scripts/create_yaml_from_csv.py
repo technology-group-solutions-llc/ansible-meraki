@@ -17,11 +17,11 @@ def create_yaml_file(csv_file, yaml_file):
     data = [row for row in reader if row['site_name'] == site_name]
     new_data = [{k:v for k,v in d.items() if k in ['device_name', 'serial_no', 'site_name', 'site_address']} for d in data]
   
-  append_dict_title(new_data, new_data_yaml, 'device')
+  # append_dict_title(new_data, new_data_yaml, 'device')
     
   with open(yaml_file, 'w') as yaml_file_writer:
-    yaml_file_writer.write("---\n")
-    yaml_writer = yaml.dump(new_data_yaml, yaml_file_writer, default_flow_style=False)
+    yaml_file_writer.write("devices:\n")
+    yaml_writer = yaml.dump(new_data, yaml_file_writer)
 
 def append_dict_title(list_of_dicts, new_dict, title):
     """
