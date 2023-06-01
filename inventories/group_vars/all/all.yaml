@@ -1,0 +1,3 @@
+---
+auth: "{{ vault_auth }}"
+org: "{{ vault_org }}"
