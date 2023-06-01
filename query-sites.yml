@@ -1,4 +1,12 @@
 ---
+# Run with: ansible-playbook -i inventories/hosts query-sites.yml
+#
+# This playbook will query the user for what network name they want to check Meraki Cloud for
+# You can choose to enter a specific name to search for or leave it blank and it will display all of the networks
+# It will error out if the network has not been created yet
+# If successful, it will either display a list of all Networks in the Org or
+# it will display a list of devices attached to the network specified
+#
 - name: meraki query
   hosts: meraki
   vars:

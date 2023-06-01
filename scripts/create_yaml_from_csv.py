@@ -43,7 +43,7 @@ def append_dict_title(list_of_dicts, new_dict, title):
 
 if __name__ == '__main__':
   print("")
-  print("Run this from the directory where the CSV input file is located")
+  print("Run this from the directory where the playbook that will use the devices.yaml resides")
   print("This will create a devices.yaml file in the same directory")
   print("")
   print("The CSV file needs to have these headings:")
@@ -53,6 +53,6 @@ if __name__ == '__main__':
   print("")
   print("Next you will be prompted for a Site Name and only devices assigned to this Site will be in the yaml output")
   print("")
-  site_name = input("Which Site Name would you like to output YAML for: ")
+  site_name = input("Which Network Name would you like to output YAML for: ")
   yaml_file = 'devices.yaml'
   create_yaml_file(csv_file, yaml_file)

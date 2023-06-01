@@ -1,4 +1,10 @@
 ---
+# Run with: ansible-playbook -i inventories/hosts query-and-add-devices.yml
+#
+# This playbook will read the devices.yaml file in the same directory and check Meraki Cloud for the devices listed
+# If the device is not already attached to the network in the site_name field then
+# it will call the playbook deploy-newdevice-fromyaml.yml in order to add it
+#
 - name: meraki query
   hosts: meraki
   vars:

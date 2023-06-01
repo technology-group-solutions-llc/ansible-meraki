@@ -1,5 +1,9 @@
 ---
-
+# Run with: DO NOT run this individually. It is called by query-and-add-devices.yml
+#
+# This playbook will read the devices.yaml file in the same directory and add the device specified at runtime to
+# the Network listed in the site_name field on Meraki Cloud
+#
 - name: include variables for devices
   include_vars:
     file: devices.yaml

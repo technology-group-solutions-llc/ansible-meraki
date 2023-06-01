@@ -1,4 +1,9 @@
 ---
+# Run with: ansible-playbook -i inventories/hosts delete-device.yml
+#
+# This playbook will query the user for a serial number and network name. It will then delete the device with
+# that serial number from the network specified. Do not run this unless you really intend to delete the device.
+#
 - name: meraki deployment
   hosts: meraki
   vars:
