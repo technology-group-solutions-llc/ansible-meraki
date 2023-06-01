@@ -19,17 +19,15 @@
         state: query
       register: org_output
 
-    - name: print devices
-      ansible.builtin.debug:
-        var: devices
+    # - name: print devices
+    #   ansible.builtin.debug:
+    #     var: devices
 
-    - name: Print unique Sites 
-      ansible.builtin.debug:
-        # var: devices
-        msg: "{{ devices.devices | json_query('[].[site_name]') | unique }}"
-      # loop: "{{ lookup('dict', devices, wantlist=True) }}"
+    # - name: Print unique Sites 
+    #   ansible.builtin.debug:
+    #     msg: "{{ devices.devices | json_query('[].[site_name]') | unique }}"
 
-    - name: Set a list of unique Sites
+    - name: Set a list of unique Sites and new devices in yaml
       ansible.builtin.set_fact:
         unique_sites: "{{ devices.devices | json_query('[].[site_name]') | unique }}"
         new_devices: "{{ devices.devices | json_query('[].[device_name]') | flatten }}"
@@ -43,13 +41,13 @@
       register: device_output
       loop: "{{ unique_sites | flatten(1) }}"
 
-    - name: Print device_output
-      ansible.builtin.debug:
-        var: device_output
+    # - name: Print device_output
+    #   ansible.builtin.debug:
+    #     var: device_output
 
     - name: Print Device names that exist
       ansible.builtin.debug:
-        msg: "Devices exist: {{ device_output.results | json_query('[*].data[*].name') | flatten }}"
+        msg: "These devices already exist: {{ device_output.results | json_query('[*].data[*].name') | flatten }}"
 
     - name: Set existing device list
       ansible.builtin.set_fact:
@@ -59,9 +57,9 @@
       ansible.builtin.set_fact:
         unique_devices: "{{ new_devices | difference(existing_devices) }}"
 
-    - name: Print vars
-      ansible.builtin.debug:
-        msg: "new devices {{ new_devices }} and existing devices {{ existing_devices }}" 
+    # - name: Print vars
+    #   ansible.builtin.debug:
+    #     msg: "new devices {{ new_devices }} and existing devices {{ existing_devices }}" 
 
     - name: Print unique devices 
       ansible.builtin.debug:
@@ -70,49 +68,3 @@
     - name: Call playbook to add new devices
       ansible.builtin.include_tasks: deploy-newdevice-fromyaml.yml
       with_items: "{{ unique_devices }}"
-
-    # - name: Block for adding only new devices
-    #   block:
-
-    #     - name: Print device to add 
-    #       ansible.builtin.debug:
-    #         msg: "I would add device "
-
-
-
-    # - name: Query all site (network) names
-    #   cisco.meraki.meraki_network:
-    #     auth_key: "{{ auth_key }}"
-    #     state: query
-    #     org_id: "{{ org_output.data.id }}"
-    #     net_name: "{{ net_name | default('') }}"
-    #   register: network_output
-
-    # - name: Fail because network has not been created yet
-    #   ansible.builtin.fail:
-    #     msg: "Network {{ net_name }} has not been created yet. Please create it first in the Meraki Cloud"
-    #   when: network_output.data == false
-
-    # - name: Print multiple network names
-    #   ansible.builtin.debug:
-    #     msg: "{{ network_output.data | selectattr('name', 'defined') | map(attribute='name') }}"
-    #   when: net_name == ""
-
-    # - name: Print single Network results
-    #   ansible.builtin.debug:
-    #     msg: "{{ network_output.data.name }} is created"
-    #   when: net_name != ""
-
-    # - name: Query devices attached to a specific network
-    #   cisco.meraki.meraki_device:
-    #     auth_key: "{{ auth_key }}"
-    #     state: query
-    #     org_id: "{{ org_output.data.id }}"
-    #     net_name: "{{ net_name }}"
-    #   register: device_output
-    #   when: net_name != ""
-
-    # - name: Print devices on network {{ net_name }}
-    #   ansible.builtin.debug:
-    #     msg: "{{ device_output.data | selectattr('name', 'defined') | map(attribute='name') }}"
-    #   when: net_name != ""
