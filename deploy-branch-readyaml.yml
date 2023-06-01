@@ -31,10 +31,17 @@
     #   loop: "{{ lookup('dict', devices, wantlist=True) }}"
     #   when: "'device-1' in item.key"
 
+    - name: Query Organization
+      cisco.meraki.meraki_organization:
+        auth_key: "{{ auth_key }}"
+        org_name: "{{ org_name }}"
+        state: query
+      register: org_output
+
     - name: Add devices to Network
       meraki_device:
         auth_key: "{{ auth_key }}"
-        org_name: "{{ org_name }}"
+        org_id: "{{ org_output.data.id }}"
         net_name: "{{ item.value.site_name }}"
         state: present
         serial: "{{ item.value.serial_no }}"
@@ -44,7 +51,7 @@
     - name: Update device Information
       meraki_device:
         auth_key: "{{ auth_key }}"
-        org_name: "{{ org_name }}"
+        org_id: "{{ org_output.data.id }}"
         net_name: "{{ item.value.site_name }}"
         state: present
         serial: "{{ item.value.serial_no }}"

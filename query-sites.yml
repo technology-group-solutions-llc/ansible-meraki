@@ -1,14 +1,45 @@
 ---
 - name: meraki query
-  hosts: localhost
+  hosts: meraki
   vars:
     auth_key: "{{ auth }}"
     org_name: "{{ org }}"
 
+  vars_prompt:
+
+    - name: net_name
+      prompt: "What network name do you want to search for (press RETURN for all)? "
+      private: no 
+
   tasks:
 
+    - name: Query Organization
+      cisco.meraki.meraki_organization:
+        auth_key: "{{ auth_key }}"
+        org_name: "{{ org_name }}"
+        state: query
+      register: org_output
+
     - name: Query all site (network) names
-      meraki_network:
+      cisco.meraki.meraki_network:
         auth_key: "{{ auth_key }}"
         state: query
-        org_name: "{{ org_name }}"
+        org_id: "{{ org_output.data.id }}"
+        validate_certs: false
+        net_name: "{{ net_name | default('') }}"
+      register: network_output
+
+    - name: Fail because network has not been created yet
+      ansible.builtin.fail:
+        msg: "Network {{ net_name }} has not been created yet. Please create it first in the Meraki Cloud"
+      when: network_output.data == false
+
+    - name: Print multiple network names
+      ansible.builtin.debug:
+        msg: "{{ network_output.data | selectattr('name', 'defined') | map(attribute='name') }}"
+      when: net_name == ""
+
+    - name: Print single Network ID results
+      ansible.builtin.debug:
+        msg: "{{ network_output.data.name }} is created"
+      when: net_name != ""
