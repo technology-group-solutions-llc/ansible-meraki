@@ -30,9 +30,15 @@
   cisco.meraki.meraki_switchport:
     auth_key: "{{ auth_key }}"
     org_id: "{{ org_output.data.id }}"
-    net_name: "{{ new_device[0].network_name }}"
+    # net_name: "{{ new_device[0].network_name }}"
     state: present
-    serial: "{{ new_device[0].serial_no }}"
+    serial: "{{ port[0].switch_serial_no }}"
+    number: "{{ port[0].port_number }}"
+    enabled: true
+    name: "{{ port[0].name }}"
+    type: "{{ port[0].type }}"
+    vlan: "{{ port[0].vlan }}"
+    access_policy_number: 1
   register: off_add_dev1
 
 - name: Update device Information
