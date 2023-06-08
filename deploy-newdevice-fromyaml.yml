@@ -17,7 +17,7 @@
 
 - name: Adding new device
   ansible.builtin.debug:
-    msg: "Adding device {{ new_device[0].device_name }} to network {{ new_device[0].site_name }}"
+    msg: "Adding device {{ new_device[0].device_name }} to network {{ new_device[0].network_name }}"
 
 - name: Query Organization
   cisco.meraki.meraki_organization:
@@ -30,7 +30,7 @@
   meraki_device:
     auth_key: "{{ auth_key }}"
     org_id: "{{ org_output.data.id }}"
-    net_name: "{{ new_device[0].site_name }}"
+    net_name: "{{ new_device[0].network_name }}"
     state: present
     serial: "{{ new_device[0].serial_no }}"
   register: off_add_dev1
@@ -39,7 +39,7 @@
   meraki_device:
     auth_key: "{{ auth_key }}"
     org_id: "{{ org_output.data.id }}"
-    net_name: "{{ new_device[0].site_name }}"
+    net_name: "{{ new_device[0].network_name }}"
     state: present
     serial: "{{ new_device[0].serial_no }}"
     hostname: "{{ new_device[0].device_name }}"
