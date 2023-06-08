@@ -6,18 +6,18 @@
 #
 - name: include variables for devices
   ansible.builtin.include_vars:
-    file: devices.yaml
-    name: devices
+    file: ports.yaml
+    name: ports
 
-- name: Select device to add 
-  ansible.builtin.set_fact:
-    new_device: "{{ devices.devices | json_query(jmesquery) }}"
-  vars:
-    jmesquery: "[?device_name=='{{ item }}']"
+# - name: Select device to add 
+#   ansible.builtin.set_fact:
+#     new_device: "{{ devices.devices | json_query(jmesquery) }}"
+#   vars:
+#     jmesquery: "[?device_name=='{{ item }}']"
 
-- name: Adding new device
-  ansible.builtin.debug:
-    msg: "Adding device {{ new_device[0].device_name }} to network {{ new_device[0].network_name }}"
+# - name: Adding new device
+#   ansible.builtin.debug:
+#     msg: "Adding device {{ new_device[0].device_name }} to network {{ new_device[0].network_name }}"
 
 - name: Query Organization
   cisco.meraki.meraki_organization:
@@ -27,7 +27,7 @@
   register: org_output
 
 - name: Add devices to Network
-  cisco.meraki.meraki_device:
+  cisco.meraki.meraki_switchport:
     auth_key: "{{ auth_key }}"
     org_id: "{{ org_output.data.id }}"
     net_name: "{{ new_device[0].network_name }}"
