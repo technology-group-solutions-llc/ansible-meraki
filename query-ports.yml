@@ -1,11 +1,9 @@
 ---
-# Run with: ansible-playbook -i inventories/hosts query-sites.yml
+# Run with: ansible-playbook -i inventories/hosts query-ports.yml
 #
-# This playbook will query the user for what network name they want to check Meraki Cloud for
-# You can choose to enter a specific name to search for or leave it blank and it will display all of the networks
-# It will error out if the network has not been created yet
-# If successful, it will either display a list of all Networks in the Org or
-# it will display a list of devices attached to the network specified
+# This playbook will prompt the user for what switch serial number they want to check Meraki Cloud for
+# It will then prompt for the port number to list. If you press enter here it will list all ports.
+# It will display the configuration of the port(s)
 #
 - name: meraki query
   hosts: meraki
@@ -17,6 +15,10 @@
 
     - name: switch_serial_no
       prompt: "What switch serial number do you want to see the ports for? "
+      private: no 
+
+    - name: port_number
+      prompt: "What port number do you want to list (press RETURN for all)? "
       private: no 
 
   tasks:
@@ -34,6 +36,7 @@
         org_name: "{{ org_name }}"
         state: query
         serial: "{{ switch_serial_no }}"
+        number: "{{ port_number | default(omit) }}"
       register: ports_output
 
     - name: Print ports_output

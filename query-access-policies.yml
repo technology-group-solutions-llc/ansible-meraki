@@ -1,11 +1,8 @@
 ---
 # Run with: ansible-playbook -i inventories/hosts query-access-policies.yml
 #
-# This playbook will query the user for what network name they want to check Meraki Cloud for
-# You can choose to enter a specific name to search for or leave it blank and it will display all of the networks
-# It will error out if the network has not been created yet
-# If successful, it will either display a list of all Networks in the Org or
-# it will display a list of devices attached to the network specified
+# This playbook will prompt the user for what network name they want to query Meraki Cloud for
+# It will display all of the Access Policies in the network
 #
 - name: meraki query
   hosts: meraki
@@ -13,11 +10,11 @@
     auth_key: "{{ auth }}"
     org_name: "{{ org }}"
 
-  # vars_prompt:
+  vars_prompt:
 
-  #   - name: net_name
-  #     prompt: "What network name do you want to search for (press RETURN for all)? "
-  #     private: no 
+    - name: net_name
+      prompt: "What network name do you want to list policies for? "
+      private: no 
 
   tasks:
 
@@ -33,8 +30,7 @@
         auth_key: "{{ auth_key }}"
         state: query
         org_id: "{{ org_output.data.id }}"
-        name: "Clearpass"
-        net_name: "RAGNC-Raleigh-NC"
+        net_name: "{{ net_name }}"
       register: policy_output
 
     - name: Print policy_output
