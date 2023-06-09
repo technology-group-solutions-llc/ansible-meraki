@@ -38,7 +38,8 @@
     name: "{{ item.name }}"
     type: "{{ item.type }}"
     vlan: "{{ item.vlan }}"
-    access_policy_number: 1
+    access_policy_number: "{{ item.access_policy_number | default('') }}"
+    access_policy_type: "{{ item.access_policy_type }}"
     allowed_vlans: "{{ item.allowed_vlans }}"
     tags: "{{ item.tags }}"
     stp_guard: "{{ item.stp_guard | lower }}"

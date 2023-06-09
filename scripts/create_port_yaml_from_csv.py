@@ -11,17 +11,51 @@ def create_yaml_file(csv_file, yaml_file):
   """
 
   new_data_yaml = {}
+  new_data = {}
+  row = {}
+  row['Tagged_VLANs'] = []
 
   with open(csv_file, 'r') as csv_file_reader:
     reader = csv.DictReader(csv_file_reader)
-    data = [row for row in reader if row['S/N'] != "" and row['Meraki Port'] != "1" and row['Access Policy'] != "Not Used"]
-    new_data = [{k:v for k,v in d.items() if k in ['Meraki Port', 'Name', 'Access Policy', 'Access/Trunk', 'Access/Native VLAN', 'Tagged VLANs', 'Port Tag', 'STP guard', 'PoE', 'S/N']} for d in data]
-  
+    data = [row for row in reader if row['S_N'] != '' and row['Meraki_Port'] != '1' and row['Access_Policy'] != 'Not Used']
+    
+    # for row in data:
+    #   if ',' in row['Tagged_VLANs']:
+    #     row['Tagged_VLANs'] = row['Tagged_VLANs'].split(',')
+
+    new_data = [{k:v for k,v in d.items() if k in ['Meraki_Port', 'Name', 'Access_Policy', 'Access_Trunk', 'Access_Native_VLAN', 'Tagged_VLANs', 'Port_Tag', 'STP_guard', 'PoE', 'S_N']} for d in data]
+   
+    for d in new_data:
+        d['Tagged_VLANs'] = d['Tagged_VLANs'].split(',')
+        if 'Open' in d['Access_Policy']:
+           d['access_policy_type'] =  "Open"
+        elif 'Clearpass' in d['Access_Policy']:
+           d['access_policy_type'] = "Custom access policy"
+           d['access_policy_number'] = 1
+    # for row in reader:
+    #   if row['S_N'] != '' and row['Meraki_Port'] != '1' and row['Access_Policy'] != 'Not Used':
+    #     new_data[row['Meraki_Port']] = row['Meraki_Port']
+    #     new_data[row['Name']] = row['Name']
+    #     new_data[row['Access_Policy']] = row['Access_Policy']
+    #     new_data[row['Access_Trunk']] = row['Access_Trunk']
+    #     new_data[row['Access_Native_VLAN']] = row['Access_Native_VLAN']
+    #     new_data[row['Tagged_VLANs']] = row['Tagged_VLANs'].split(",")
+    #     new_data[row['Port_Tag']] = row['Port_Tag']
+    #     new_data[row['STP_guard']] = row['STP_guard']
+    #     new_data[row['PoE']] = row['PoE']
+    #     new_data[row['S_N']] = row['S_N']
+
+        # new_data = [{k:v for k,v in d.items() if k in ['Meraki_Port', 'Name', 'Access_Policy', 'Access_Trunk', 'Access_Native_VLAN', 'Tagged_VLANs', 'Port_Tag', 'STP_guard', 'PoE', 'S_N']} for d in data]
+        # if ',' in new_data['Tagged_VLANs']:
+        #    new_data['Tagged_VLANs'].split(",")
+    #     row['Meraki Port'] = 'port_number'
+    #     new_data = row
   # append_dict_title(new_data, new_data_yaml, 'device')
     
   with open(yaml_file, 'w') as yaml_file_writer:
     yaml_file_writer.write("ports:\n")
-    yaml_writer = yaml.dump(new_data, yaml_file_writer)
+    # yaml_writer = yaml.dump(new_data, yaml_file_writer)
+    yaml_writer = yaml.dump(new_data, yaml_file_writer, indent=2)
 
 def append_dict_title(list_of_dicts, new_dict, title):
     """
