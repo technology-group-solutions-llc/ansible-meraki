@@ -1,5 +1,5 @@
 ---
-# Run with: ansible-playbook -i inventories/hosts query-access-policies.yml
+# Run with: ansible-playbook -i inventories/hosts query-sites.yml
 #
 # This playbook will query the user for what network name they want to check Meraki Cloud for
 # You can choose to enter a specific name to search for or leave it blank and it will display all of the networks
@@ -13,11 +13,11 @@
     auth_key: "{{ auth }}"
     org_name: "{{ org }}"
 
-  # vars_prompt:
+  vars_prompt:
 
-  #   - name: net_name
-  #     prompt: "What network name do you want to search for (press RETURN for all)? "
-  #     private: no 
+    - name: switch_serial_no
+      prompt: "What switch serial number do you want to see the ports for? "
+      private: no 
 
   tasks:
 
@@ -28,15 +28,14 @@
         state: query
       register: org_output
 
-    - name: Query all Access Policies 
-      cisco.meraki.meraki_ms_access_policies:
+    - name: Query all ports on switch SN 
+      cisco.meraki.meraki_switchport:
         auth_key: "{{ auth_key }}"
+        org_name: "{{ org_name }}"
         state: query
-        org_id: "{{ org_output.data.id }}"
-        name: "Clearpass"
-        net_name: "RAGNC-Raleigh-NC"
-      register: policy_output
+        serial: "{{ switch_serial_no }}"
+      register: ports_output
 
-    - name: Print policy_output
+    - name: Print ports_output
       ansible.builtin.debug:
-        var: policy_output
+        var: ports_output

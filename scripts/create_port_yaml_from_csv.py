@@ -27,11 +27,20 @@ def create_yaml_file(csv_file, yaml_file):
    
     for d in new_data:
         d['Tagged_VLANs'] = d['Tagged_VLANs'].split(',')
+
         if 'Open' in d['Access_Policy']:
            d['access_policy_type'] =  "Open"
         elif 'Clearpass' in d['Access_Policy']:
            d['access_policy_type'] = "Custom access policy"
            d['access_policy_number'] = 1
+
+        d['Port_Tag'] = d['Port_Tag'].split(',')
+
+        if 'Enabled' in d['PoE']:
+           d['poe_enabled'] = True
+        else:
+           d['poe_enabled'] = False
+
     # for row in reader:
     #   if row['S_N'] != '' and row['Meraki_Port'] != '1' and row['Access_Policy'] != 'Not Used':
     #     new_data[row['Meraki_Port']] = row['Meraki_Port']
