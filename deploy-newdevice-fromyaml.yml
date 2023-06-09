@@ -5,7 +5,7 @@
 # the Network listed in the site_name field on Meraki Cloud
 #
 - name: include variables for devices
-  include_vars:
+  ansible.builtin.include_vars:
     file: devices.yaml
     name: devices
 
@@ -27,7 +27,7 @@
   register: org_output
 
 - name: Add devices to Network
-  meraki_device:
+  cisco.meraki.meraki_device:
     auth_key: "{{ auth_key }}"
     org_id: "{{ org_output.data.id }}"
     net_name: "{{ new_device[0].network_name }}"
@@ -36,7 +36,7 @@
   register: off_add_dev1
 
 - name: Update device Information
-  meraki_device:
+  cisco.meraki.meraki_device:
     auth_key: "{{ auth_key }}"
     org_id: "{{ org_output.data.id }}"
     net_name: "{{ new_device[0].network_name }}"

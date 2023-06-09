@@ -1,0 +1,44 @@
+---
+# Run with: ansible-playbook -i inventories/hosts query-ports.yml
+#
+# This playbook will prompt the user for what switch serial number they want to check Meraki Cloud for
+# It will then prompt for the port number to list. If you press enter here it will list all ports.
+# It will display the configuration of the port(s)
+#
+- name: meraki query
+  hosts: meraki
+  vars:
+    auth_key: "{{ auth }}"
+    org_name: "{{ org }}"
+
+  vars_prompt:
+
+    - name: switch_serial_no
+      prompt: "What switch serial number do you want to see the ports for? "
+      private: no 
+
+    - name: port_number
+      prompt: "What port number do you want to list (press RETURN for all)? "
+      private: no 
+
+  tasks:
+
+    - name: Query Organization
+      cisco.meraki.meraki_organization:
+        auth_key: "{{ auth_key }}"
+        org_name: "{{ org_name }}"
+        state: query
+      register: org_output
+
+    - name: Query all ports on switch SN 
+      cisco.meraki.meraki_switchport:
+        auth_key: "{{ auth_key }}"
+        org_name: "{{ org_name }}"
+        state: query
+        serial: "{{ switch_serial_no }}"
+        number: "{{ port_number | default(omit) }}"
+      register: ports_output
+
+    - name: Print ports_output
+      ansible.builtin.debug:
+        var: ports_output

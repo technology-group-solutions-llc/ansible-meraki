@@ -29,7 +29,7 @@
       register: org_output
 
     - name: Remove device from Network
-      meraki_device:
+      cisco.meraki.meraki_device:
         auth_key: "{{ auth_key }}"
         org_id: "{{ org_output.data.id }}"
         net_name: "{{ network_name }}"

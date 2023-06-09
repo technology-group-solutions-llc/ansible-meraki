@@ -1,0 +1,38 @@
+---
+# Run with: ansible-playbook -i inventories/hosts query-access-policies.yml
+#
+# This playbook will prompt the user for what network name they want to query Meraki Cloud for
+# It will display all of the Access Policies in the network
+#
+- name: meraki query
+  hosts: meraki
+  vars:
+    auth_key: "{{ auth }}"
+    org_name: "{{ org }}"
+
+  vars_prompt:
+
+    - name: net_name
+      prompt: "What network name do you want to list policies for? "
+      private: no 
+
+  tasks:
+
+    - name: Query Organization
+      cisco.meraki.meraki_organization:
+        auth_key: "{{ auth_key }}"
+        org_name: "{{ org_name }}"
+        state: query
+      register: org_output
+
+    - name: Query all Access Policies 
+      cisco.meraki.meraki_ms_access_policies:
+        auth_key: "{{ auth_key }}"
+        state: query
+        org_id: "{{ org_output.data.id }}"
+        net_name: "{{ net_name }}"
+      register: policy_output
+
+    - name: Print policy_output
+      ansible.builtin.debug:
+        var: policy_output

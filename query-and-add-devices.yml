@@ -14,7 +14,7 @@
   tasks:
 
     - name: include variables for devices
-      include_vars:
+      ansible.builtin.include_vars:
         file: devices.yaml
         name: devices
 
