@@ -8,7 +8,7 @@ Much of the Ansible code here originally came from
 # Normal workflow for adding switches
 ## Update Excel Inventory Workbook and export CSV
 The easiest way I have found to do this so far is:
-1. Fill in the site_name, site_address, and device_name fields in the inventory spreadsheet on sharepoint for the devices you want to add
+1. Fill in the net_name, site_address, and hostname fields in the inventory spreadsheet on sharepoint for the devices you want to add
 2. Select the entire Inventory tab's fields by clicking the upper left box in the sheet
 3. Copy to clipboard (CTRL-C)
 4. Open Excel on your machine, paste the data, Save As csv
@@ -35,16 +35,16 @@ ansible-playbook -i inventories/hosts query-and-add-devices.yml
 # Normal workflow for configuring MS switch ports
 ## Update Excel Workbook and export CSV
 This code currently works from a starting Excel worksheet that has these headings:
-* Meraki_Port - this is the port number on the switch
-* Name - this is a name for the port or can be empty
+* number - this is the port number on the switch
+* name - this is a name for the port or can be empty
 * Access_Policy - we currently expect either Open or Clearpass in this field and it is used to determine the access_policy_type and access_policy_number
-* Access_Trunk - this is the port type and should be Access or Trunk
-* Access_Native_VLAN - the ports native VLAN
-* Tagged_VLANs - this should be a comma separated list of allowed_vlans for the port
-* Port_Tag - this can be empty or a comma separated list of Tags to assign to the port
-* STP_guard - This can be empty for disabled or "root guard", "bpdu guard", or "loop guard"
+* type - this is the port type and should be Access or Trunk
+* vlan - the ports native VLAN
+* allowed_vlans - this should be a comma separated list of allowed_vlans for the port
+* tags - this can be empty or a comma separated list of Tags to assign to the port
+* stp_guard - This can be empty for disabled or "root guard", "bpdu guard", or "loop guard"
 * PoE - this should be either Enabled or Disabled
-* S_N - this should be the Serial Number of the switch to configured these ports on
+* serial - this should be the Serial Number of the switch to configured these ports on
 
 After the spreadsheet is filled in you need to save it as CSV.
 
@@ -59,7 +59,7 @@ cd ansible-meraki
 python3 scripts/create_port_yaml_from_csv.py
 Type the path to the csv file you want to work with
 This should output a ports.yaml file in the current directory. Verify the file looks good.
-This script will ignore any lines that do NOT have a S_N populated, or have "Not_Used" for the Access_Policy, or are port number 1.
+This script will ignore any lines that do NOT have a serial populated, or have "Not_Used" for the Access_Policy, or are port number 1.
 
 ## Run port-configuration.yml to update the port configurations
 ansible-playbook -i inventories/hosts port-configuration.yml
@@ -68,10 +68,10 @@ NOTE: This will update ALL of the ports listed in the yaml file to the configura
 # scripts
 
 ## create_yaml_from_csv.py
-This script will prompt for a CSV file to use as input. Next, it will prompt for the Network Name you want to search the CSV file for. It will then search the CSV file for column headings of "device_name, serial_no, site_name, site_address" and rows that have the site_name set to the Network name specified, and output the data from those columns to a devices.yaml file which can be used as input to the playbooks.
+This script will prompt for a CSV file to use as input. Next, it will prompt for the Network Name you want to search the CSV file for. It will then search the CSV file for column headings of "hostname, serial, net_name, site_address" and rows that have the site_name set to the Network name specified, and output the data from those columns to a devices.yaml file which can be used as input to the playbooks.
 
 ## create_port_yaml_from_csv.py
-This script will prompt for a CSV file to use as input. It will then search the CSV file for column headings of "Meraki_Port, Name, Access_Policy, Access_Trunk, Access_Native_VLAN, Tagged_VLANs, Port_Tag, STP_guard, PoE, S_N" and rows that have the S_N set, Access_Policy not set to "Not_Used", and the Meraki_Port is not 1. It will then output the data from those columns to a ports.yaml file which can be used as input to the playbook.
+This script will prompt for a CSV file to use as input. It will then search the CSV file for column headings of "number, name, Access_Policy, type, vlan, allowed_vlans, tags, stp_guard, PoE, serial" and rows that have the serial set, Access_Policy not set to "Not_Used", and the number is not 1. It will then output the data from those columns to a ports.yaml file which can be used as input to the playbook.
 # playbooks
 
 ## query-sites.yml

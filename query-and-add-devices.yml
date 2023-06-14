@@ -2,7 +2,7 @@
 # Run with: ansible-playbook -i inventories/hosts query-and-add-devices.yml
 #
 # This playbook will read the devices.yaml file in the same directory and check Meraki Cloud for the devices listed
-# If the device is not already attached to the network in the site_name field then
+# If the device is not already attached to the network in the net_name field then
 # it will call the playbook deploy-newdevice-fromyaml.yml in order to add it
 #
 - name: meraki query
@@ -31,12 +31,12 @@
 
     # - name: Print unique Sites 
     #   ansible.builtin.debug:
-    #     msg: "{{ devices.devices | json_query('[].[site_name]') | unique }}"
+    #     msg: "{{ devices.devices | json_query('[].[net_name]') | unique }}"
 
     - name: Set a list of unique Sites and new devices in yaml
       ansible.builtin.set_fact:
-        unique_sites: "{{ devices.devices | json_query('[].[site_name]') | unique }}"
-        new_devices: "{{ devices.devices | json_query('[].[device_name]') | flatten }}"
+        unique_sites: "{{ devices.devices | json_query('[].[net_name]') | unique }}"
+        new_devices: "{{ devices.devices | json_query('[].[hostname]') | flatten }}"
 
     - name: Query devices attached to a specific network
       cisco.meraki.meraki_device:
@@ -73,4 +73,4 @@
 
     - name: Call playbook to add new devices
       ansible.builtin.include_tasks: deploy-newdevice-fromyaml.yml
-      with_items: "{{ unique_devices }}"
+      loop: "{{ unique_devices }}"

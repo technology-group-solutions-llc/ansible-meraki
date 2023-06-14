@@ -31,7 +31,7 @@
       register: org_output
 
     - name: Query all ports on switch SN 
-      cisco.meraki.meraki_switchport:
+      cisco.meraki.meraki_ms_switchport:
         auth_key: "{{ auth_key }}"
         org_name: "{{ org_name }}"
         state: query
