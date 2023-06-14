@@ -39,4 +39,4 @@
         tags: "{{ item.Port_Tag }}"
         stp_guard: "{{ item.STP_guard | lower }}"
         poe_enabled: "{{ item.poe_enabled }}"
-      with_items: "{{ ports }}"
+      loop: "{{ ports }}"

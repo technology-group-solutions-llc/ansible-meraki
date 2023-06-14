@@ -8,7 +8,7 @@ Much of the Ansible code here originally came from
 # Normal workflow for adding switches
 ## Update Excel Inventory Workbook and export CSV
 The easiest way I have found to do this so far is:
-1. Fill in the site_name, site_address, and device_name fields in the inventory spreadsheet on sharepoint for the devices you want to add
+1. Fill in the net_name, site_address, and hostname fields in the inventory spreadsheet on sharepoint for the devices you want to add
 2. Select the entire Inventory tab's fields by clicking the upper left box in the sheet
 3. Copy to clipboard (CTRL-C)
 4. Open Excel on your machine, paste the data, Save As csv
@@ -68,7 +68,7 @@ NOTE: This will update ALL of the ports listed in the yaml file to the configura
 # scripts
 
 ## create_yaml_from_csv.py
-This script will prompt for a CSV file to use as input. Next, it will prompt for the Network Name you want to search the CSV file for. It will then search the CSV file for column headings of "device_name, serial_no, site_name, site_address" and rows that have the site_name set to the Network name specified, and output the data from those columns to a devices.yaml file which can be used as input to the playbooks.
+This script will prompt for a CSV file to use as input. Next, it will prompt for the Network Name you want to search the CSV file for. It will then search the CSV file for column headings of "hostname, serial, net_name, site_address" and rows that have the site_name set to the Network name specified, and output the data from those columns to a devices.yaml file which can be used as input to the playbooks.
 
 ## create_port_yaml_from_csv.py
 This script will prompt for a CSV file to use as input. It will then search the CSV file for column headings of "Meraki_Port, Name, Access_Policy, Access_Trunk, Access_Native_VLAN, Tagged_VLANs, Port_Tag, STP_guard, PoE, S_N" and rows that have the S_N set, Access_Policy not set to "Not_Used", and the Meraki_Port is not 1. It will then output the data from those columns to a ports.yaml file which can be used as input to the playbook.

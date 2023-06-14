@@ -2,7 +2,7 @@
 # Run with: DO NOT run this individually. It is called by query-and-add-devices.yml
 #
 # This playbook will read the devices.yaml file in the same directory and add the device specified at runtime to
-# the Network listed in the site_name field on Meraki Cloud
+# the Network listed in the net_name field on Meraki Cloud
 #
 - name: include variables for devices
   ansible.builtin.include_vars:
@@ -13,11 +13,11 @@
   ansible.builtin.set_fact:
     new_device: "{{ devices.devices | json_query(jmesquery) }}"
   vars:
-    jmesquery: "[?device_name=='{{ item }}']"
+    jmesquery: "[?hostname=='{{ item }}']"
 
 - name: Adding new device
   ansible.builtin.debug:
-    msg: "Adding device {{ new_device[0].device_name }} to network {{ new_device[0].network_name }}"
+    msg: "Adding device {{ new_device[0].hostname }} to network {{ new_device[0].net_name }}"
 
 - name: Query Organization
   cisco.meraki.meraki_organization:
@@ -30,19 +30,19 @@
   cisco.meraki.meraki_device:
     auth_key: "{{ auth_key }}"
     org_id: "{{ org_output.data.id }}"
-    net_name: "{{ new_device[0].network_name }}"
+    net_name: "{{ new_device[0].net_name }}"
     state: present
-    serial: "{{ new_device[0].serial_no }}"
+    serial: "{{ new_device[0].serial }}"
   register: off_add_dev1
 
 - name: Update device Information
   cisco.meraki.meraki_device:
     auth_key: "{{ auth_key }}"
     org_id: "{{ org_output.data.id }}"
-    net_name: "{{ new_device[0].network_name }}"
+    net_name: "{{ new_device[0].net_name }}"
     state: present
-    serial: "{{ new_device[0].serial_no }}"
-    hostname: "{{ new_device[0].device_name }}"
+    serial: "{{ new_device[0].serial }}"
+    hostname: "{{ new_device[0].hostname }}"
     address: "{{ new_device[0].site_address }}"
     move_map_marker: true
   register: off_update_dev1
