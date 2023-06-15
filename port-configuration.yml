@@ -32,7 +32,7 @@
         enabled: true
         name: "{{ item.name }}"
         type: "{{ item.type | lower }}"
-        vlan: "{{ item.vlan | default("1") }}"
+        vlan: "{{ item.vlan | default('1') }}"
         access_policy_number: "{{ item.access_policy_number | default(omit) }}"
         access_policy_type: "{{ item.access_policy_type }}"
         allowed_vlans: "{{ item.allowed_vlans }}"
