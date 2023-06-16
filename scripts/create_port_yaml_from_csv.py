@@ -15,7 +15,7 @@ def create_yaml_file(csv_file, yaml_file):
 
   with open(csv_file, 'r') as csv_file_reader:
     reader = csv.DictReader(csv_file_reader)
-    data = [row for row in reader if row['serial'] != '' and row['number'] != '1' and row['Access_Policy'] != 'Not Used']
+    data = [row for row in reader if row['serial'] != '' and row['serial'] != '#N/A' and row['number'] != '1' and row['Access_Policy'] != 'Not Used']
     
     new_data = [{k:v for k,v in d.items() if k in ['number', 'name', 'Access_Policy', 'type', 'vlan', 'allowed_vlans', 'tags', 'stp_guard', 'PoE', 'serial']} for d in data]
    
