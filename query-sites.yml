@@ -60,15 +60,19 @@
       register: device_output
       when: net_name != ""
 
+    - name: Sort devices on network
+      ansible.builtin.set_fact:
+        device_output_sorted: '{{ device_output.data | sort(attribute="name") }}'
+
     - name: Print devices on network {{ net_name }}
       ansible.builtin.debug:
-        msg: "{{ device_output.data | selectattr('name', 'defined') | map(attribute='name') }}"
+        msg: "{{ device_output_sorted | selectattr('name', 'defined') | map(attribute='name') }}"
       when: net_name != ""
 
     - name: Print devices on network {{ net_name }}
       ansible.builtin.debug:
         msg: "{{ item.name }} is running firmware {{ item.firmware }} {{ item.lan_ip }}" 
       when: net_name != ""
-      loop: "{{ device_output.data }}"
+      loop: "{{ device_output_sorted }}"
       loop_control: 
         label: "{{ item.name }}"
