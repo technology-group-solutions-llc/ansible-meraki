@@ -45,6 +45,9 @@ def create_yaml_file(csv_file, yaml_file):
         if d['vlan'] == '':
            d['vlan'] = "1"
 
+        if d['type'] == '':
+           d['type'] = "Trunk"
+
   with open(yaml_file, 'w') as yaml_file_writer:
     yaml_file_writer.write("ports:\n")
     yaml_writer = yaml.dump(new_data, yaml_file_writer, indent=2)
