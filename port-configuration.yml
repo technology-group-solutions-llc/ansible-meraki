@@ -40,3 +40,31 @@
         stp_guard: "{{ item.stp_guard | lower }}"
         poe_enabled: "{{ item.poe_enabled }}"
       loop: "{{ ports }}"
+      loop_control:
+        label: "starting task to configure port {{ item.number }} on switch {{ item.serial }}"
+      register: port_configs
+      async: 10800
+      poll: 0
+
+    - name: Wait for port configs to finish
+      ansible.builtin.async_status:
+        jid: "{{ item.ansible_job_id }}"
+      register: config_job_results
+      until: config_job_results.finished
+      retries: 1080
+      delay: 10
+      loop: "{{ port_configs.results }}"
+      loop_control:
+        label: "finished configuring port {{ item.item.number }} on switch {{ item.item.serial }}"
+
+    - name: Print successful result
+      ansible.builtin.debug:
+        msg: "All ports in ports.yaml configured successfully"
+
+    - name: Clean up job cache
+      ansible.builtin.async_status:
+        jid: "{{ item.ansible_job_id }}"
+        mode: cleanup
+      loop: "{{ port_configs.results }}"
+      loop_control:
+        label: "cache removed"
