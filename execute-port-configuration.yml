@@ -1,0 +1,73 @@
+---
+#
+# This playbook will read the ports.yaml file in the same directory and configure the ports
+# on the specified switch serial number in the Meraki cloud
+#
+# - name: meraki query
+#   hosts: meraki
+#   vars:
+#     auth_key: "{{ auth }}"
+#     org_name: "{{ org }}"
+
+#   tasks:
+
+#     - name: include variables for devices
+#       ansible.builtin.include_vars:
+#         file: ports.yaml
+
+#     - name: Query Organization
+#       cisco.meraki.meraki_organization:
+#         auth_key: "{{ auth_key }}"
+#         org_name: "{{ org_name }}"
+#         state: query
+#       register: org_output
+
+- name: Add devices to Network
+  cisco.meraki.meraki_ms_switchport:
+    auth_key: "{{ auth_key }}"
+    org_id: "{{ org_output.data.id }}"
+    state: present
+    serial: "{{ async_item.serial }}"
+    number: "{{ async_item.number }}"
+    enabled: true
+    name: "{{ async_item.name }}"
+    type: "{{ async_item.type | lower }}"
+    vlan: "{{ async_item.vlan | default('1') }}"
+    access_policy_number: "{{ async_item.access_policy_number | default(omit) }}"
+    access_policy_type: "{{ async_item.access_policy_type }}"
+    allowed_vlans: "{{ async_item.allowed_vlans }}"
+    tags: "{{ async_item.tags }}"
+    stp_guard: "{{ async_item.stp_guard | lower }}"
+    poe_enabled: "{{ async_item.poe_enabled }}"
+  loop: "{{ port }}"
+  loop_control:
+    loop_var: "async_item"
+    label: "starting task to configure port {{ async_item.number }} on switch {{ async_item.serial }}"
+  register: port_configs
+  async: 10800
+  poll: 0
+
+- name: Wait for port configs to finish
+  ansible.builtin.async_status:
+    jid: "{{ async_job.ansible_job_id }}"
+  register: config_job_results
+  until: config_job_results.finished
+  retries: 1080
+  delay: 10
+  loop: "{{ port_configs.results }}"
+  loop_control:
+    loop_var: "async_job"
+    label: "finished configuring port {{ async_job.async_item.number }} on switch {{ async_job.async_item.serial }}"
+
+- name: Print successful batch result
+  ansible.builtin.debug:
+    msg: "Ports in this batch configured successfully"
+
+- name: Clean up job cache
+  ansible.builtin.async_status:
+    jid: "{{ job_to_clean.ansible_job_id }}"
+    mode: cleanup
+  loop: "{{ port_configs.results }}"
+  loop_control:
+    loop_var: "job_to_clean"
+    label: "cache removed"
