@@ -22,35 +22,35 @@
         state: query
       register: org_output
 
-    - name: Run batches of network port configurations
-      vars:
-        port: "{{ item }}"
-      include_tasks: execute-port-configuration.yml
-      loop: "{{ ports | batch(9) | list }}"
+    # - name: Run batches of network port configurations
+    #   vars:
+    #     port: "{{ item }}"
+    #   include_tasks: execute-port-configuration.yml
+    #   loop: "{{ ports | batch(9) | list }}"
 
-    # - name: Add devices to Network
-    #   cisco.meraki.meraki_ms_switchport:
-    #     auth_key: "{{ auth_key }}"
-    #     org_id: "{{ org_output.data.id }}"
-    #     state: present
-    #     serial: "{{ item.serial }}"
-    #     number: "{{ item.number }}"
-    #     enabled: true
-    #     name: "{{ item.name }}"
-    #     type: "{{ item.type | lower }}"
-    #     vlan: "{{ item.vlan | default('1') }}"
-    #     access_policy_number: "{{ item.access_policy_number | default(omit) }}"
-    #     access_policy_type: "{{ item.access_policy_type }}"
-    #     allowed_vlans: "{{ item.allowed_vlans }}"
-    #     tags: "{{ item.tags }}"
-    #     stp_guard: "{{ item.stp_guard | lower }}"
-    #     poe_enabled: "{{ item.poe_enabled }}"
-    #   loop: "{{ ports }}"
-    #   loop_control:
-    #     label: "starting task to configure port {{ item.number }} on switch {{ item.serial }}"
-    #   register: port_configs
-    #   async: 10800
-    #   poll: 0
+    - name: Add devices to Network
+      cisco.meraki.meraki_ms_switchport:
+        auth_key: "{{ auth_key }}"
+        org_id: "{{ org_output.data.id }}"
+        state: present
+        serial: "{{ item.serial }}"
+        number: "{{ item.number }}"
+        enabled: true
+        name: "{{ item.name }}"
+        type: "{{ item.type | lower }}"
+        vlan: "{{ item.vlan | default('1') }}"
+        access_policy_number: "{{ item.access_policy_number | default(omit) }}"
+        access_policy_type: "{{ item.access_policy_type }}"
+        allowed_vlans: "{{ item.allowed_vlans }}"
+        tags: "{{ item.tags }}"
+        stp_guard: "{{ item.stp_guard | lower }}"
+        poe_enabled: "{{ item.poe_enabled }}"
+      loop: "{{ ports }}"
+      loop_control:
+        label: "starting task to configure port {{ item.number }} on switch {{ item.serial }}"
+      register: port_configs
+      # async: 10800
+      # poll: 0
 
     # - name: Wait for port configs to finish
     #   ansible.builtin.async_status:
