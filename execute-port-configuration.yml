@@ -52,8 +52,8 @@
     jid: "{{ async_job.ansible_job_id }}"
   register: config_job_results
   until: config_job_results.finished
-  retries: 1080
-  delay: 10
+  retries: 400
+  delay: 1
   loop: "{{ port_configs.results }}"
   loop_control:
     loop_var: "async_job"
